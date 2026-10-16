@@ -561,6 +561,7 @@ function tableroVacio() {
 function App() {
   const [intentos, setIntentos] = useState(tableroVacio());
   const [filaActual, setFilaActual] = useState(0);
+  const [aviso, setAviso] = useState("");
 
   const ultimo = filaActual > 0 ? intentos[filaActual - 1].join("") : "";
   const ganada = ultimo === SOLUCION;
@@ -577,6 +578,7 @@ function App() {
     const copia = intentos.map((fila) => [...fila]);
     copia[f][c] = letra;
     setIntentos(copia);
+    setAviso("");
 
     if (letra !== "") evento.target.nextElementSibling?.focus();
   }
@@ -588,20 +590,27 @@ function App() {
     const copia = intentos.map((fila) => [...fila]);
     copia[f][c - 1] = "";
     setIntentos(copia);
+    setAviso("");
     evento.currentTarget.previousElementSibling?.focus();
 
   }
 
   function comprobar(evento) {
     evento.preventDefault();
-    if (terminada || intentos[filaActual].includes("")) return;
+    if (terminada) return;
+    if (intentos[filaActual].includes("")) {
+      setAviso("Faltan letras");
+      return;
+    }
 
+    setAviso("");
     setFilaActual(filaActual + 1);
   }
 
   function nuevaPartida() {
     setIntentos(tableroVacio());
     setFilaActual(0);
+    setAviso("");
   }
 
   return (
@@ -624,6 +633,7 @@ function App() {
         ))}
       </div>
       <div className="resultado">
+        {aviso && <p className="mensaje" role="status">{aviso}</p>}
         {terminada ? (
           <p className="mensaje" role="status">
             {ganada
