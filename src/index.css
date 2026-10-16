@@ -21,18 +21,24 @@
 .casilla.correcta {
   background: #2e7d32;
   border-color: #2e7d32;
+  border-style: solid;
+  border-width: 4px;
   color: #ffffff;
 }
 
 .casilla.presente {
   background: #f2c94c;
-  border-color: #f2c94c;
+  border-color: #806500;
+  border-style: dashed;
+  border-width: 3px;
   color: #1a1a1b;
 }
 
 .casilla.ausente {
   background: #5f6368;
-  border-color: #5f6368;
+  border-color: #383b3e;
+  border-style: double;
+  border-width: 4px;
   color: #ffffff;
 }
 

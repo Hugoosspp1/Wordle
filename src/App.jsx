@@ -623,6 +623,8 @@ function App() {
               <Casilla
                 key={c}
                 letra={letra}
+                fila={f + 1}
+                columna={c + 1}
                 estado={f < filaActual ? estadoDe(letra, c, SOLUCION) : ""}
                 activa={f === filaActual && !terminada}
                 onCambio={(evento) => cambiarLetra(f, c, evento)}
