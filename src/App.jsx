@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import Casilla from "./Components/Casilla.jsx";
+import Teclado from "./Components/Teclado.jsx";
 import { estadoDe } from "./juego.js";
 
 const FILAS = 6;
@@ -548,7 +549,12 @@ const PALABRAS = [
   "JUEGO",
   "GIJON", 
 ];
-const SOLUCION = PALABRAS[Math.floor(Math.random() * PALABRAS.length)];
+function elegirSolucion(anterior) {
+  const opciones = PALABRAS.filter((palabra) => palabra !== anterior);
+  return opciones[Math.floor(Math.random() * opciones.length)];
+}
+
+const PRIORIDAD_ESTADO = { ausente: 1, presente: 2, correcta: 3 };
 
 function tableroVacio() {
   const tablero = [];
@@ -559,12 +565,26 @@ function tableroVacio() {
 }
 
 function App() {
+  const [solucion, setSolucion] = useState(() => elegirSolucion());
   const [intentos, setIntentos] = useState(tableroVacio());
   const [filaActual, setFilaActual] = useState(0);
   const [aviso, setAviso] = useState("");
+  const [columnaActiva, setColumnaActiva] = useState(0);
+
+  const estadosLetras = {};
+  for (let f = 0; f < filaActual; f++) {
+    for (let c = 0; c < COLUMNAS; c++) {
+      const letra = intentos[f][c];
+      const estado = estadoDe(letra, c, solucion);
+      const estadoAnterior = estadosLetras[letra];
+      if (!estadoAnterior || PRIORIDAD_ESTADO[estado] > PRIORIDAD_ESTADO[estadoAnterior]) {
+        estadosLetras[letra] = estado;
+      }
+    }
+  }
 
   const ultimo = filaActual > 0 ? intentos[filaActual - 1].join("") : "";
-  const ganada = ultimo === SOLUCION;
+  const ganada = ultimo === solucion;
   const terminada = ganada || filaActual === FILAS;
 
   useEffect(() => {
@@ -595,6 +615,33 @@ function App() {
 
   }
 
+  function pulsarTecla(tecla) {
+    if (terminada) return;
+
+    if (tecla === "BORRAR") {
+      const columna = intentos[filaActual][columnaActiva] === ""
+        ? columnaActiva - 1
+        : columnaActiva;
+      if (columna < 0) return;
+
+      const copia = intentos.map((fila) => [...fila]);
+      copia[filaActual][columna] = "";
+      setIntentos(copia);
+      setAviso("");
+      document.querySelectorAll(".casilla:enabled")[columna]?.focus();
+      return;
+    }
+
+    const copia = intentos.map((fila) => [...fila]);
+    copia[filaActual][columnaActiva] = tecla;
+    setIntentos(copia);
+    setAviso("");
+
+    if (columnaActiva < COLUMNAS - 1) {
+      document.querySelectorAll(".casilla:enabled")[columnaActiva + 1]?.focus();
+    }
+  }
+
   function comprobar(evento) {
     evento.preventDefault();
     if (terminada) return;
@@ -608,9 +655,11 @@ function App() {
   }
 
   function nuevaPartida() {
+    setSolucion((anterior) => elegirSolucion(anterior));
     setIntentos(tableroVacio());
     setFilaActual(0);
     setAviso("");
+    setColumnaActiva(0);
   }
 
   return (
@@ -625,22 +674,24 @@ function App() {
                 letra={letra}
                 fila={f + 1}
                 columna={c + 1}
-                estado={f < filaActual ? estadoDe(letra, c, SOLUCION) : ""}
+                estado={f < filaActual ? estadoDe(letra, c, solucion) : ""}
                 activa={f === filaActual && !terminada}
                 onCambio={(evento) => cambiarLetra(f, c, evento)}
                 onBorrar={(evento) => borrarAnterior(f, c, evento)}
+                onFoco={() => setColumnaActiva(c)}
               />
             ))}
           </div>
         ))}
       </div>
+      <Teclado estadosLetras={estadosLetras} onTecla={pulsarTecla} />
       <div className="resultado">
         {aviso && <p className="mensaje" role="status">{aviso}</p>}
         {terminada ? (
           <p className="mensaje" role="status">
             {ganada
               ? "¡Enhorabuena, has acertado!"
-              : `La palabra era ${SOLUCION}`}
+              : `La palabra era ${solucion}`}
           </p>
         ) : (
           <button className="boton" type="submit">

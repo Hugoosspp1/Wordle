@@ -48,6 +48,7 @@
 }
 
 .casilla:focus-visible,
+.tecla:focus-visible,
 .boton:focus-visible {
   outline: 3px solid #1a73e8;
   outline-offset: 2px;
@@ -75,4 +76,55 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
+}
+
+.teclado {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  max-width: 500px;
+  margin: 20px auto;
+}
+
+.fila-teclado {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.tecla {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 4px;
+  border: 1px solid #b8babc;
+  border-radius: 4px;
+  background: #d3d6da;
+  color: #1a1a1b;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tecla.correcta {
+  border: 3px solid #1d5e24;
+  background: #2e7d32;
+  color: #ffffff;
+}
+
+.tecla.presente {
+  border: 3px dashed #806500;
+  background: #f2c94c;
+}
+
+.tecla.ausente {
+  border: 4px double #383b3e;
+  background: #5f6368;
+  color: #ffffff;
+}
+
+.tecla-borrar {
+  flex: 1.7;
+  font-size: 0.8rem;
 }

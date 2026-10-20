@@ -4,7 +4,7 @@ const DESCRIPCIONES_ESTADO = {
   ausente: 'letra ausente',
 }
 
-function Casilla({ letra, estado = '', fila, columna, activa, onCambio, onBorrar }) {
+function Casilla({ letra, estado = '', fila, columna, activa, onCambio, onBorrar, onFoco }) {
   const descripcionEstado = DESCRIPCIONES_ESTADO[estado]
 
   return (
@@ -16,6 +16,7 @@ function Casilla({ letra, estado = '', fila, columna, activa, onCambio, onBorrar
       disabled={!activa}
       onChange={onCambio}
       onKeyDown={onBorrar}
+      onFocus={onFoco}
     />  
   )
 }
